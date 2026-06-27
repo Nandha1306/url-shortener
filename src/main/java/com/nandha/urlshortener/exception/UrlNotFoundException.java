@@ -5,6 +5,6 @@ package com.nandha.urlshortener.exception;
  */
 public class UrlNotFoundException extends RuntimeException{
     public UrlNotFoundException(String shortCode) {
-        super("No URL found for short code: " + shortCode);
+        super("URL with short code " + shortCode + " was not found");
     }
 }

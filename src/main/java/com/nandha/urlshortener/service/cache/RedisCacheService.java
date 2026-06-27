@@ -2,7 +2,9 @@ package com.nandha.urlshortener.service.cache;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nandha.urlshortener.entity.CachedUrl;
+import com.nandha.urlshortener.config.CacheProperties;
+import com.nandha.urlshortener.dto.CachedUrl;
+import com.nandha.urlshortener.util.RedisKeys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ public class RedisCacheService {
 
     private final StringRedisTemplate redisTemplate;
     private final ObjectMapper objectMapper;
+    private final CacheProperties cacheProperties;
 
     /**
      * Retrieves URL metadata from Redis.
@@ -50,7 +53,7 @@ public class RedisCacheService {
             redisTemplate.opsForValue().set(
                     buildKey(shortCode),
                     json,
-                    Duration.ofHours(24)
+                    Duration.ofHours(cacheProperties.getUrlTtlHours())
             );
 
         } catch (JsonProcessingException e) {
@@ -59,10 +62,17 @@ public class RedisCacheService {
     }
 
     /**
+     * Removes a cached URL.
+     */
+    public void evict(String shortCode) {
+        redisTemplate.delete(buildKey(shortCode));
+    }
+
+    /**
      * Redis key format:
      * url:{shortCode}
      */
     private String buildKey(String shortCode) {
-        return "url:" + shortCode;
+        return  RedisKeys.URL_PREFIX + shortCode;
     }
 }

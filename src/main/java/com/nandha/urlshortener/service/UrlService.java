@@ -2,7 +2,9 @@ package com.nandha.urlshortener.service;
 
 import com.nandha.urlshortener.dto.ShortenRequest;
 import com.nandha.urlshortener.dto.ShortenResponse;
-import com.nandha.urlshortener.entity.Url;
+import com.nandha.urlshortener.dto.UrlStatsResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * URL business operations.
@@ -14,5 +16,12 @@ public interface UrlService {
      */
     String resolve(String shortCode);
 
-    Url getByShortCode(String shortCode);
+    UrlStatsResponse getStats(String shortCode);
+
+    /**
+     * Deletes a URL using its short code.
+     */
+    void delete(String shortCode);
+
+    Page<UrlStatsResponse> list(Pageable pageable);
 }

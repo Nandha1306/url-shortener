@@ -1,7 +1,6 @@
 package com.nandha.urlshortener.exception;
 
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpHeaders;
+import org.springframework.beans.factory.parsing.Problem;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -46,6 +45,33 @@ public class GlobalExceptionHandler {
                 );
 
         problemDetail.setTitle("Validation Failed");
+        return problemDetail;
+    }
+
+    /**
+     * Handles rate limit violations.
+     */
+    @ExceptionHandler(RateLimitExceededException.class)
+    public ProblemDetail handleRateLimit(RateLimitExceededException ex) {
+        ProblemDetail problemDetail =
+                ProblemDetail.forStatusAndDetail(
+                        HttpStatus.TOO_MANY_REQUESTS,
+                        ex.getMessage()
+                );
+
+        problemDetail.setTitle("Rate Limit Exceeded");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(UrlExpiredException.class)
+    public ProblemDetail handleExpired(UrlExpiredException ex) {
+        ProblemDetail problemDetail = ProblemDetail
+                .forStatusAndDetail(
+                        HttpStatus.GONE,
+                        ex.getMessage()
+                );
+
+        problemDetail.setTitle("URL Expired");
         return problemDetail;
     }
 }

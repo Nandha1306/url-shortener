@@ -1,10 +1,12 @@
 package com.nandha.urlshortener.repository;
 
 import com.nandha.urlshortener.entity.Url;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 public interface UrlRepository extends JpaRepository<Url, Long> {
@@ -22,4 +24,16 @@ public interface UrlRepository extends JpaRepository<Url, Long> {
        WHERE u.id = :id
        """)
     void incrementClickCount(Long id);
+
+    /**
+     * Deletes a URL using its short code.
+     */
+    void deleteByShortCode(String shortCode);
+
+    /**
+     * Checks whether a short code exists.
+     */
+    boolean existsByShortCode(String shortCode);
+
+    Page<Url> findAll(Pageable pageable);
 }

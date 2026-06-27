@@ -1,5 +1,7 @@
 package com.nandha.urlshortener.dto;
 
+import org.springframework.cglib.core.Local;
+
 import java.time.LocalDateTime;
 
 /**
@@ -9,6 +11,7 @@ public record UrlStatsResponse (
     String shortCode,
     String originalUrl,
     Long clickCount,
-    LocalDateTime createdAt
+    LocalDateTime createdAt,
+    LocalDateTime expireAt
 ){
 }

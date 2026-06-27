@@ -47,4 +47,22 @@ public class Url {
     @Column(name = "click_count", nullable = false)
     @Builder.Default
     private Long clickCount = 0L;
+
+    /**
+     * Optional expiration timestamp.
+     *
+     * If current time passes this value,
+     * redirects are no longer allowed.
+     */
+    @Column(name = "expires_at")
+    private LocalDateTime expiresAt;
+
+    /**
+     * Checks whether the URL has expired.
+     */
+    public boolean isExpired() {
+        return expiresAt != null
+                && LocalDateTime.now()
+                .isAfter(expiresAt);
+    }
 }
