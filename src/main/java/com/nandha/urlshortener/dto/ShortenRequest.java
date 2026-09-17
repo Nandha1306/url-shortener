@@ -1,5 +1,6 @@
 package com.nandha.urlshortener.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -12,10 +13,18 @@ public record ShortenRequest(
 
         @NotBlank(message = "Original URL is required")
         @URL(message = "Invalid URL format")
+        @Schema(
+                description = "Original URL to shorten",
+                example = "https://spring.io"
+        )
         String originalUrl,
 
         @Min(1)
         @Max(365)
+        @Schema(
+                description = "Optional expiry in days",
+                example = "30"
+        )
         Integer expiresInDays
 ) {
 }

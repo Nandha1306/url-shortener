@@ -11,6 +11,9 @@ import com.nandha.urlshortener.mapper.UrlMapper;
 import com.nandha.urlshortener.repository.UrlRepository;
 import com.nandha.urlshortener.service.cache.RedisCacheService;
 import com.nandha.urlshortener.util.Base62Encoder;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -38,6 +41,15 @@ public class UrlServiceImpl implements UrlService {
      */
     @Override
     @Transactional
+    @Operation(
+            summary = "Create a short URL",
+            description = "Creates a shortened URL for the given original URL."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Short URL created"),
+            @ApiResponse(responseCode = "400", description = "Validation failed"),
+            @ApiResponse(responseCode = "429", description = "Rate limit exceeded")
+    })
     public ShortenResponse shorten(ShortenRequest request) {
         Url url = Url.builder()
                 .originalUrl(request.originalUrl())
@@ -53,6 +65,10 @@ public class UrlServiceImpl implements UrlService {
         saved.setShortCode(shortCode);
         urlRepository.save(saved);
 
+        log.info("Created short URL '{}' for '{}'",
+                saved.getShortCode(),
+                saved.getOriginalUrl());
+
         return urlMapper.toShortenResponse(saved);
     }
 
@@ -64,7 +80,6 @@ public class UrlServiceImpl implements UrlService {
 
         // if yes means return it from the cache itself
         if(cached != null){
-//            System.out.println("CACHE HIT");
             log.debug("Cache hit for {}", shortCode);
 
             // if the cached url is expired
@@ -83,7 +98,6 @@ public class UrlServiceImpl implements UrlService {
                 .orElseThrow(() ->
                         new UrlNotFoundException(shortCode));
 
-//        System.out.println("CACHE MISS");
         log.debug("Cache miss for {}", shortCode);
 
         // storing the queried shortcode into cache memory
@@ -124,6 +138,7 @@ public class UrlServiceImpl implements UrlService {
         }
         urlRepository.deleteByShortCode(shortCode);
         cacheService.evict(shortCode);
+        log.info("Deleted short URL '{}'", shortCode);
     }
 
     /**

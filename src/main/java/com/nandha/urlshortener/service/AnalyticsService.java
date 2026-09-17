@@ -2,10 +2,12 @@ package com.nandha.urlshortener.service;
 
 import com.nandha.urlshortener.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AnalyticsService {
@@ -15,9 +17,10 @@ public class AnalyticsService {
      * Increments click count without blocking
      * the redirect response.
      */
-    @Async
+    @Async("taskExecutor")
     @Transactional
     public void incrementClickCount(Long urlId) {
+        log.info("Running on thread: {}", Thread.currentThread().getName());
         urlRepository.incrementClickCount(urlId);
     }
 }
