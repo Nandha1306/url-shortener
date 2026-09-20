@@ -37,6 +37,14 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    bat 'mvnw.cmd sonar:sonar -Dsonar.projectKey=url-shortener'
+                }
+            }
+        }
+
         stage('Package') {
             steps {
                 bat 'mvnw.cmd package -DskipTests'
