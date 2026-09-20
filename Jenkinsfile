@@ -8,6 +8,8 @@ pipeline {
 
         REDIS_HOST = 'localhost'
         REDIS_PORT = '6379'
+
+        DB_PASS = credentials('mysql-db-password')
     }
 
     stages {
