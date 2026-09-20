@@ -40,7 +40,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    bat 'mvnw.cmd sonar:sonar -Dsonar.projectKey=url-shortener'
+                    bat 'mvnw.cmd clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=url-shortener -Dsonar.projectName=url-shortener'
                 }
             }
         }
@@ -56,9 +56,13 @@ pipeline {
         always {
             bat 'docker compose down'
         }
+git add Jenkinsfile
+git commit -m "ci: add sonarqube analysis"
+git push origin feature/setup-ci-cd
         success {
             echo 'CI Pipeline completed successfully!'
         }
+
         failure {
             echo 'CI Pipeline failed!'
         }
