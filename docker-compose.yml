@@ -2,20 +2,38 @@ services:
 
   mysql:
     image: mysql:8.0
+    container_name: url-shortener-mysql
+
     environment:
-#      MYSQL_ROOT_PASSWORD: password
-#      MYSQL_DATABASE: url_shortener
-      MYSQL_DATABASE: ${DB_NAME:-url_shortener}
-      MYSQL_ROOT_PASSWORD: ${DB_PASS:-password}
+      MYSQL_ROOT_PASSWORD: ${DB_PASS}
+      MYSQL_DATABASE: ${DB_NAME}
+
     ports:
-      - "3307:3306"
+      - "${DB_PORT}:3306"
+
     volumes:
       - mysql_data:/var/lib/mysql
 
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${DB_PASS}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+
   redis:
     image: redis:7-alpine
+    container_name: url-shortener-redis
+
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT}:6379"
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
 
 volumes:
   mysql_data:
