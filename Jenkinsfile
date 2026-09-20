@@ -56,9 +56,7 @@ pipeline {
         always {
             bat 'docker compose down'
         }
-git add Jenkinsfile
-git commit -m "ci: add sonarqube analysis"
-git push origin feature/setup-ci-cd
+
         success {
             echo 'CI Pipeline completed successfully!'
         }
