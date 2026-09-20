@@ -109,6 +109,7 @@ class UrlServiceImplTest {
         assertEquals("https://spring.io", result);
 
         verify(cacheService).get("abc123");
+        verify(analyticsService).incrementClickCount(1L);
 
         verifyNoInteractions(urlRepository);
     }
@@ -131,24 +132,39 @@ class UrlServiceImplTest {
 
         assertEquals("https://spring.io", result);
 
+        verify(cacheService).get("abc123");
+
+        verify(urlRepository)
+                .findByShortCode("abc123");
+
         verify(cacheService)
                 .cache(
                         eq("abc123"),
                         any(CachedUrl.class)
                 );
+
+        verify(analyticsService)
+                .incrementClickCount(1L);
     }
 
     @Test
     void shouldThrowExceptionWhenShortCodeDoesNotExist() {
-        when(cacheService.get(any(String.class)))
+        when(cacheService.get("unknown"))
                 .thenReturn(null);
 
-        when(urlRepository.findByShortCode(any(String.class)))
+        when(urlRepository.findByShortCode("unknown"))
                 .thenReturn(Optional.empty());
 
         assertThrows(
                 UrlNotFoundException.class,
                 () -> urlService.resolve("unknown")
         );
+
+        verify(cacheService).get("unknown");
+
+        verify(urlRepository)
+                .findByShortCode("unknown");
+
+        verifyNoInteractions(analyticsService);
     }
 }
