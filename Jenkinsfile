@@ -80,10 +80,18 @@ pipeline {
                 ]) {
                     bat '''
                         echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin
-
                         docker build -t %DOCKER_USERNAME%/url-shortener:latest .
-
                         docker push %DOCKER_USERNAME%/url-shortener:latest
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy to Staging') {
+            steps {
+                sshagent(['ec2-staging-ssh']) {
+                    bat '''
+                        ssh -o StrictHostKeyChecking=no ubuntu@13.221.76.212 "cd /home/ubuntu/url-shortener && git pull --ff-only origin feature/setup-ci-cd && docker compose -f docker-compose.staging.yml pull && docker compose -f docker-compose.staging.yml up -d"
                     '''
                 }
             }
