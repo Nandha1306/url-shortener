@@ -68,6 +68,26 @@ pipeline {
                 bat 'mvnw.cmd package -DskipTests'
             }
         }
+
+        stage('Docker Build & Push') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhub-credentials',
+                        usernameVariable: 'DOCKER_USERNAME',
+                        passwordVariable: 'DOCKER_PASSWORD'
+                    )
+                ]) {
+                    bat '''
+                        echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin
+
+                        docker build -t %DOCKER_USERNAME%/url-shortener:latest .
+
+                        docker push %DOCKER_USERNAME%/url-shortener:latest
+                    '''
+                }
+            }
+        }
     }
 
     post {
