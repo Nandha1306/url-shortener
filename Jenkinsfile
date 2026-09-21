@@ -23,7 +23,7 @@ pipeline {
             steps {
                 sshagent(['ec2-staging-ssh']) {
                     bat '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@54.197.148.3 "docker --version"
+                        ssh -o StrictHostKeyChecking=no ubuntu@13.221.76.212 "docker --version"
                     '''
                 }
             }
