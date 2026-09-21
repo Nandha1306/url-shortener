@@ -28,7 +28,7 @@ services:
       retries: 20
 
   app:
-    image: YOUR_DOCKERHUB_USERNAME/url-shortener:latest
+    image: nandhak06/url-shortener:latest
     container_name: url-shortener-app
 
     environment:
@@ -42,7 +42,7 @@ services:
       REDIS_PORT: 6379
 
     ports:
-      - "8080:8080"
+      - "80:8080"
 
     depends_on:
       mysql:
