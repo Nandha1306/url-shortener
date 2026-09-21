@@ -19,6 +19,16 @@ pipeline {
             }
         }
 
+        stage('Test EC2 Connection') {
+            steps {
+                sshagent(['ec2-staging-ssh']) {
+                    bat '''
+                        ssh -o StrictHostKeyChecking=no ubuntu@54.197.148.3 "docker --version"
+                    '''
+                }
+            }
+        }
+
         stage('Start Dependencies') {
             steps {
                 bat 'docker compose up -d mysql redis'
