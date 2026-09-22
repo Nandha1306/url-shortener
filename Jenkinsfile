@@ -101,7 +101,7 @@ pipeline {
             steps {
                 sshagent(['ec2-staging-ssh']) {
                     bat '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@13.221.76.212 "curl -fsS http://localhost/api/urls"
+                        ssh -o StrictHostKeyChecking=no ubuntu@13.221.76.212 "for i in {1..12}; do curl -fsS http://localhost/api/urls && exit 0; echo Waiting for application...; sleep 5; done; exit 1"
                     '''
                 }
             }
