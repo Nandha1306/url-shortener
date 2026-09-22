@@ -96,6 +96,16 @@ pipeline {
                 }
             }
         }
+
+        stage('Verify Deployment') {
+            steps {
+                sshagent(['ec2-staging-ssh']) {
+                    bat '''
+                        ssh -o StrictHostKeyChecking=no ubuntu@13.221.76.212 "curl -fsS http://localhost/api/urls"
+                    '''
+                }
+            }
+        }
     }
 
     post {
