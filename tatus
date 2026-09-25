@@ -1,0 +1,11 @@
+* [33m1d58fce[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/setup-ci-cd[m[33m)[m cd: change deployment verification
+[31m|[m * [33m72e598c[m[33m ([m[1;31morigin/feature/setup-ci-cd[m[33m)[m fix: align staging port with spring boot
+[31m|[m[31m/[m  
+* [33medc21b8[m cd: add deployment verification
+* [33m1e1e80d[m cd: deploy to ec2 staging
+* [33mb815616[m cd: configure staging docker image and port
+* [33m65702ca[m cd: build and push docker image
+* [33md08be7a[m ci: update EC2 host
+* [33m19310f0[m ci: test EC2 SSH connection
+* [33m66f7096[m ci: add staging docker compose
+* [33m131f988[m ci: enforce sonarqube quality gate

@@ -8,9 +8,6 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_PASS}
       MYSQL_DATABASE: ${DB_NAME}
 
-    ports:
-      - "${DB_PORT}:3306"
-
     volumes:
       - mysql_data:/var/lib/mysql
 
@@ -20,13 +17,9 @@ services:
       timeout: 5s
       retries: 20
 
-
   redis:
     image: redis:7-alpine
     container_name: url-shortener-redis
-
-    ports:
-      - "${REDIS_PORT}:6379"
 
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -34,6 +27,29 @@ services:
       timeout: 3s
       retries: 20
 
+  app:
+    image: nandhak06/url-shortener:latest
+    container_name: url-shortener-app
+
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME}
+      DB_USER: root
+      DB_PASS: ${DB_PASS}
+
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
+    ports:
+      - "80:8081"
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
 volumes:
   mysql_data:
+
