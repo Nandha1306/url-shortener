@@ -75,32 +75,37 @@ public class UrlServiceImpl implements UrlService {
     @Override
     @Transactional(readOnly = true)
     public String resolve(String shortCode) {
-        // check it the shortcode is in cache memory or not.
+        // 1. Check Redis cache first
         CachedUrl cached = cacheService.get(shortCode);
 
-        // if yes means return it from the cache itself
-        if(cached != null){
-            log.debug("Cache hit for {}", shortCode);
-
-            // if the cached url is expired
-            if(cached.expiresAt() != null &&
+        if (cached != null) {
+            // Check expiry
+            if (cached.expiresAt() != null &&
                     LocalDateTime.now().isAfter(cached.expiresAt())) {
+                cacheService.evict(shortCode);
                 throw new UrlExpiredException(shortCode);
             }
 
-            // if not expired means return the url
+            log.debug("Cache hit for {}", shortCode);
             analyticsService.incrementClickCount(cached.id());
             return cached.originalUrl();
         }
 
-        // if not present in the cache means it query in db
+        // 2. Cache miss -> query database
         Url url = urlRepository.findByShortCode(shortCode)
                 .orElseThrow(() ->
                         new UrlNotFoundException(shortCode));
 
         log.debug("Cache miss for {}", shortCode);
 
-        // storing the queried shortcode into cache memory
+        // 3. Check database URL expiry
+        if (url.getExpiresAt() != null &&
+                LocalDateTime.now().isAfter(url.getExpiresAt())) {
+
+            throw new UrlExpiredException(shortCode);
+        }
+
+        // 4. Put valid URL into cache
         cacheService.cache(
                 shortCode,
                 new CachedUrl(
@@ -109,7 +114,8 @@ public class UrlServiceImpl implements UrlService {
                         url.getExpiresAt()
                 )
         );
-        // increase the counter
+
+        // 5. Analytics
         analyticsService.incrementClickCount(url.getId());
         return url.getOriginalUrl();
     }

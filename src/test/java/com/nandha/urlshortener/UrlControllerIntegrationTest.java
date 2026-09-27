@@ -4,23 +4,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nandha.urlshortener.dto.ShortenRequest;
 import com.nandha.urlshortener.entity.Url;
 import com.nandha.urlshortener.repository.UrlRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
 import static org.hamcrest.Matchers.hasSize;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 /**
  * Integration tests for URL APIs.
  *
@@ -30,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+//@ActiveProfiles("test")
 class UrlControllerIntegrationTest {
 
     @Autowired
@@ -41,9 +47,14 @@ class UrlControllerIntegrationTest {
     @Autowired
     private UrlRepository urlRepository;
 
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+
     @BeforeEach
     void setup() {
         urlRepository.deleteAll();
+        stringRedisTemplate.delete("ratelimit:127.0.0.1");
     }
 
     /**
