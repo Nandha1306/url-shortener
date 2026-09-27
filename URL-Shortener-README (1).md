@@ -66,7 +66,7 @@ wn short code (e.g., `short.ly/my-project`) |
 
 | Layer | Technology | Purpose |
 |---|---|---|
-| Language | Java 17 | LTS, records, text blocks, sealed classes |
+| Language | Java 21 | LTS, records, text blocks, sealed classes |
 | Framework | Spring Boot 3.x | REST API, DI, auto-configuration |
 | Security | Spring Security + JWT | Stateless auth (optional advanced feature) |
 | ORM | Spring Data JPA + Hibernate | Database operations |
@@ -560,7 +560,7 @@ CREATE INDEX idx_expires_at ON urls (expires_at);
 
 ### 8.1 Prerequisites
 
-- Java 17+ (JDK)
+- Java 21+ (JDK)
 - Maven 3.8+
 - Docker & Docker Compose
 - Postman (for API testing)
