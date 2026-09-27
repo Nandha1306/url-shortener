@@ -91,7 +91,7 @@ pipeline {
             steps {
                 sshagent(['ec2-staging-ssh']) {
                     bat '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@13.221.76.212 "cd /home/ubuntu/url-shortener && git pull --ff-only origin feature/setup-ci-cd && docker compose -f docker-compose.staging.yml pull && docker compose -f docker-compose.staging.yml up -d"
+                        ssh -o StrictHostKeyChecking=no ubuntu@50.17.1.15 "cd /home/ubuntu/url-shortener && git pull --ff-only origin feature/setup-ci-cd && docker compose -f docker-compose.staging.yml pull && docker compose -f docker-compose.staging.yml up -d"
                     '''
                 }
             }
@@ -101,7 +101,7 @@ pipeline {
             steps {
                 sshagent(['ec2-staging-ssh']) {
                     bat '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@13.221.76.212 "for i in {1..12}; do curl -fsS http://localhost/api/urls && exit 0; echo Waiting for application...; sleep 5; done; exit 1"
+                        ssh -o StrictHostKeyChecking=no ubuntu@50.17.1.15 "for i in {1..12}; do curl -fsS http://localhost/api/urls && exit 0; echo Waiting for application...; sleep 5; done; exit 1"
                     '''
                 }
             }
